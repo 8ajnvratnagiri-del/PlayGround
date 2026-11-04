@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b10" />
+  <title>GTA V 2D — Los Santos</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230b0b10'/%3E%3Cpath d='M14 46V18h10l8 14 8-14h10v28H40V34l-8 13-8-13v12z' fill='%23a9ff3f'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="game" aria-label="Los Santos 2D game world"></canvas>
+
+    <div id="hud" class="hidden" aria-live="polite">
+      <div class="hud-top-left">
+        <div class="identity">
+          <span class="identity-mark">M</span>
+          <div>
+            <strong>MARCUS</strong>
+            <span>STREET ENTREPRENEUR</span>
+          </div>
+        </div>
+        <div class="bars">
+          <div class="bar health"><i id="health-bar"></i><span>HP</span></div>
+          <div class="bar armor"><i id="armor-bar"></i><span>AR</span></div>
+        </div>
+        <div class="cash-row">
+          <span class="cash-icon">$</span>
+          <strong id="cash">1,250</strong>
+          <span class="cash-label">CASH</span>
+        </div>
+      </div>
+
+      <div class="hud-top-right">
+        <div id="wanted" class="wanted" title="Wanted level">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <div class="clock-row">
+          <span id="clock">18:42</span>
+          <span id="district">DOWNTOWN</span>
+        </div>
+        <button id="sound-toggle" class="icon-btn" title="Toggle sound (M)" aria-label="Toggle sound">♪</button>
+      </div>
+
+      <div id="mission-panel" class="mission-panel">
+        <div class="mission-kicker"><span id="mission-state">NEXT JOB</span><i></i></div>
+        <h2 id="mission-title">FIRST GEAR</h2>
+        <p id="mission-objective">Steal the yellow Sultan parked out front.</p>
+        <div class="mission-distance" id="mission-distance"></div>
+      </div>
+
+      <div id="radar-wrap" class="radar-wrap">
+        <canvas id="radar" width="420" height="420"></canvas>
+        <div class="radar-ring"></div>
+        <div class="radar-n">N</div>
+      </div>
+
+      <div id="weapon-hud" class="weapon-hud">
+        <div class="weapon-icon" id="weapon-icon">▰</div>
+        <div>
+          <strong id="weapon-name">PISTOL</strong>
+          <span><b id="ammo">12</b> / <i id="reserve">72</i></span>
+        </div>
+      </div>
+
+      <div id="vehicle-hud" class="vehicle-hud hidden">
+        <div class="speed-dial">
+          <div id="speed-number">0</div>
+          <span>MPH</span>
+        </div>
+        <div class="vehicle-meta">
+          <strong id="vehicle-name">SULTAN</strong>
+          <div class="speed-track"><i id="speed-bar"></i></div>
+          <span id="radio-station">NIGHTDRIVE FM · 98.7</span>
+        </div>
+      </div>
+
+      <div id="prompt" class="prompt hidden"><kbd>E</kbd><span id="prompt-text">JACK CAR</span></div>
+      <div id="toast-stack" class="toast-stack"></div>
+
+      <div id="mission-banner" class="mission-banner hidden">
+        <span id="banner-kicker">MISSION</span>
+        <strong id="banner-title">FIRST GEAR</strong>
+        <i id="banner-sub">A new hustle begins</i>
+      </div>
+
+      <div id="objective-arrow" class="objective-arrow hidden">
+        <div class="arrow-head"></div>
+        <span id="arrow-distance">240m</span>
+      </div>
+
+      <div class="hint-bar">
+        <span><kbd>WASD</kbd> MOVE / DRIVE</span>
+        <span><kbd>E</kbd> ENTER / INTERACT</span>
+        <span><kbd>SHIFT</kbd> SPRINT</span>
+        <span><kbd>SPACE</kbd> HANDBRAKE</span>
+        <span><kbd>R</kbd> RELOAD</span>
+        <span><kbd>ESC</kbd> PAUSE</span>
+      </div>
+    </div>
+
+    <div id="touch-ui" class="touch-ui hidden">
+      <div id="joystick" class="joystick"><div id="stick" class="stick"></div></div>
+      <div class="touch-actions">
+        <button id="btn-fire" class="touch-btn fire" aria-label="Fire">FIRE</button>
+        <button id="btn-action" class="touch-btn action" aria-label="Enter or exit vehicle">ENTER</button>
+        <button id="btn-sprint" class="touch-btn sprint" aria-label="Sprint or handbrake">RUN</button>
+        <button id="btn-reload" class="touch-btn small" aria-label="Reload">RELOAD</button>
+      </div>
+      <button id="btn-pause" class="touch-pause" aria-label="Pause">II</button>
+    </div>
+
+    <div id="title-screen" class="screen title-screen">
+      <div class="title-grain"></div>
+      <div class="title-topline">
+        <span>ROCKSTAR GAMES PRESENTS</span>
+        <span class="live-dot">● LIVE FROM LOS SANTOS</span>
+      </div>
+      <div class="title-core">
+        <div class="title-eyebrow">A 2D CRIME SAGA</div>
+        <h1 class="game-logo">
+          <span class="logo-small">GRAND THEFT AUTO</span>
+          <span class="logo-main">LOS SANTOS</span>
+          <span class="logo-two">2D</span>
+        </h1>
+        <p class="tagline">The city is yours. Until somebody takes it back.</p>
+        <div class="title-actions">
+          <button id="start-btn" class="primary-btn"><span>START THE HUSTLE</span><i>→</i></button>
+          <button id="new-game-btn" class="text-btn hidden">NEW GAME</button>
+        </div>
+        <div class="title-controls">
+          <span><b>WASD</b> move</span>
+          <span><b>MOUSE</b> aim / shoot</span>
+          <span><b>E</b> jack cars</span>
+          <span><b>SHIFT</b> sprint</span>
+        </div>
+      </div>
+      <div class="title-bottom">
+        <div class="rating-box">
+          <b>18+</b>
+          <span>CRIME<br>VIOLENCE<br>BAD IDEAS</span>
+        </div>
+        <p>Every car can be stolen. Every shortcut has a price. Five jobs. One city.</p>
+        <span class="build-tag">LS//2D · BUILD 1.0</span>
+      </div>
+    </div>
+
+    <div id="pause-screen" class="screen pause-screen hidden">
+      <div class="pause-card">
+        <div class="pause-kicker">GAME PAUSED</div>
+        <h2>LOS SANTOS<br>CAN WAIT.</h2>
+        <div class="pause-stats">
+          <div><span>CASH</span><strong id="pause-cash">$1,250</strong></div>
+          <div><span>MISSIONS</span><strong id="pause-missions">0 / 5</strong></div>
+          <div><span>WANTED</span><strong id="pause-wanted">CLEAN</strong></div>
+        </div>
+        <button id="resume-btn" class="primary-btn"><span>BACK TO THE STREETS</span><i>→</i></button>
+        <button id="pause-sound-btn" class="text-btn">SOUND: ON</button>
+        <button id="pause-restart-btn" class="text-btn danger">RESTART GAME</button>
+        <div class="pause-help">
+          <span><kbd>E</kbd> enter / exit</span>
+          <span><kbd>R</kbd> reload</span>
+          <span><kbd>SPACE</kbd> handbrake</span>
+          <span><kbd>M</kbd> sound</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="fail-screen" class="screen fail-screen hidden">
+      <div class="fail-card">
+        <div id="fail-kicker" class="fail-kicker">WASTED</div>
+        <h2 id="fail-title">THE STREETS<br>WON THIS ROUND.</h2>
+        <p id="fail-reason">You got clipped. It happens to the best of us.</p>
+        <div class="fail-actions">
+          <button id="respawn-btn" class="primary-btn"><span>GET BACK UP</span><i>→</i></button>
+          <button id="fail-menu-btn" class="text-btn">MAIN MENU</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="end-screen" class="screen end-screen hidden">
+      <div class="end-card">
+        <div class="end-kicker">THE CITY IS YOURS</div>
+        <h2>KING OF<br>LOS SANTOS.</h2>
+        <p>Five jobs. A body count. A very nice parking spot. Marcus wins.</p>
+        <div class="end-stats">
+          <div><span>CASH</span><strong id="end-cash">$0</strong></div>
+          <div><span>KILLS</span><strong id="end-kills">0</strong></div>
+          <div><span>CRASHES</span><strong id="end-crashes">0</strong></div>
+        </div>
+        <button id="free-roam-btn" class="primary-btn"><span>KEEP RUNNING THE CITY</span><i>→</i></button>
+      </div>
+    </div>
+
+    <div id="rotate-hint" class="rotate-hint hidden">
+      <span>↻</span>
+      <p>Turn your phone sideways for a wider view of Los Santos.</p>
+    </div>
+  </div>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>
